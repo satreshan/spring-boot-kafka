@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Values.service.name }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.service.name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}{{ .Values.service.image}}:{{ .Values.service.imageTag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          capabilities:
+            drop:
+              - CHOWN
+              - DAC_OVERRIDE
+              - FOWNER
+              - SETGID
+              - SETUID
+              - NET_RAW
+              - SYS_CHROOT
+              - SETFCAP 
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+        livenessProbe:
+           httpGet:
+             path: "{{ .Values.service.basePath }}health"
+             port: {{ .Values.service.internalPort }}
+        readinessProbe:
+           httpGet:
+             path: "{{ .Values.service.basePath }}health"
+             port: {{ .Values.service.internalPort }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}

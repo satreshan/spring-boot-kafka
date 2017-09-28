@@ -1,0 +1,22 @@
+replicaCount: 1
+image:
+  repository: 870659343486.dkr.ecr.us-west-1.amazonaws.com/
+  tag: latest
+  pullPolicy: Always
+service:
+  name: gsnlp-service
+  type: ClusterIP
+  basePath: /
+  image: gsnlp
+  imageTag: latest
+  externalPort: 8085
+  internalPort: 8085
+  plexus_protocolServed: https://
+  plexus_deployedBehindGateway: true
+ingress:
+  enabled: true
+  # Used to create Ingress record (should used with service.type: ClusterIP).
+  hosts:
+    - "*"
+  annotations:
+  tls:
